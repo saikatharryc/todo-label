@@ -9,8 +9,7 @@ const labelSchema = new Schema({
     type: String,
     required: true,
   },
-  {
-    timestamps: true,
-  }
+},{
+  timestamps: true,
 });
 module.exports = labelSchema;

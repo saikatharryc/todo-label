@@ -12,15 +12,64 @@
  */
 
 const express = require('express');
-
+const todoLib = require('../../lib/todo');
+const labelLib = require('../../lib/label');
 
 const router = express.Router();
 
 
-function somefunc(req, res,next) {
-  res.send('hi');
+function createTodo(req, res, next) {
+  todoLib.saveTodo(req.body, function (errorInSave, savedTodo) {
+    if (errorInSave) {
+      res.status(500).json(errorInSave);
+      return;
+    }
+    res.status(200).json(savedTodo);
+  });
+};
+
+
+function fetchTodo(req, res, next) {
+  todoLib.fetchTodo(function (errorInFetch, fetchedTodos) {
+    if (errorInFetch) {
+      res.status(500).json(errorInFetch);
+      return;
+    }
+    res.status(200).json(fetchedTodos);
+  });
 }
 
-router.get('/', somefunc);
+
+
+function createLabel(req, res, next) {
+  const todoIdObj = { '_id': req.params.id };
+  todoLib.fetchSingleTodo(todoIdObj, function (errorInFetch, fetchedTodos) {
+    if (errorInFetch) {
+      res.status(500).json(errorInFetch);
+      return;
+    }
+    labelLib.savelabel(req.body, function (errorInSave, savedLabel) {
+      if (errorInSave) {
+        res.status(500).json(errorInSave);
+        return;
+      }
+      fetchedTodos.labels.push(savedLabel._id);
+      const todoToSave = { id: fetchedTodos._id, labels: fetchedTodos.labels };
+      todoLib.labelUpdateTodo(todoToSave, function (errorInFetch, fetchedTodos) {
+        if (errorInFetch) {
+          res.status(500).json(errorInFetch);
+          return;
+        }
+
+
+        res.status(200).json(savedLabel);
+      });
+    });
+  });
+}
+
+router.post('/todo', createTodo);
+router.get('/todo', fetchTodo);
+router.post('/label/:id', createLabel);
 
 module.exports = router;
