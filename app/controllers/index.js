@@ -40,7 +40,7 @@ function fetchTodo(req, res, next) {
 }
 
 function fetchSingleTodo(req, res, next) {
-  const todoId = {_id: req.params.id};
+  const todoId = { _id: req.params.id };
   todoLib.fetchSingleTodo(todoId, function (errorInFetch, fetchedTodo) {
     if (errorInFetch) {
       res.status(500).json(errorInFetch);
@@ -120,7 +120,16 @@ function updateLabel(req, res, next) {
   });
 }
 
-
+function removeLabel(req, res, next) {
+  const labelIDObj = { _id: req.params.labelID };
+  labelLib.removeLabel(labelIDObj, function (errorInFetch, deleteLabel) {
+    if (errorInFetch) {
+      res.status(500).json(errorInFetch);
+      return;
+    }
+    res.status(200).json({DeletedInstance: deleteLabel});
+  });
+}
 
 router.post('/todo', createTodo);
 router.get('/todo', fetchTodo);
@@ -129,4 +138,5 @@ router.get('/label', fetchLabel);
 router.get('/label/:id', fetchSinglelabel);
 router.post('/label/:id', createLabel);
 router.post('/label/:label_id/update', updateLabel);
+router.get('/label/:labelID/delete',removeLabel);
 module.exports = router;
