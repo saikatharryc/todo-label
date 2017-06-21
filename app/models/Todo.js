@@ -13,13 +13,11 @@ const todoSchema = new Schema({
     type: String,
     required: false,
   },
-  createdon: {
-    type: Date,
-    required: true,
-  },
   labels: [{
     type: Schema.Types.ObjectId,
     ref: 'Label',
   }],
+},{
+  timestamps: true,
 });
 module.exports = todoSchema;
